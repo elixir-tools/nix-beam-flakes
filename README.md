@@ -165,7 +165,7 @@ For projects that formerly, or concurrently, use
         beamWorkspace = {
           enable = true;
           versions = {
-            fromToolVersioons = ./.tool-versions;
+            fromToolVersions = ./.tool-versions;
           };
         };
       };
