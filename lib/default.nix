@@ -59,7 +59,15 @@
     basePkg = otpBasePackage pkgs version;
   in
     if basePkg != null
-    then basePkg.override {inherit sha256 version;}
+    then
+      if (lib.versions.major version) == "25"
+      then
+        basePkg.override {
+          version = version;
+          sha256 = sha256;
+          configureFlags = ["--disable-jit"];
+        }
+      else basePkg.override {inherit sha256 version;}
     else null;
 
   mkPackageSet = {
