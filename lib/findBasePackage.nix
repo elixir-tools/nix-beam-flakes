@@ -13,6 +13,6 @@ in {
     inherit (pkgs.beam) interpreters;
     major = elemAt (splitVersion version) 0;
   in
-    interpreters."erlangR${major}"
+    interpreters."erlang_${major}"
     or (throw "beam-flakes: Erlang version ${major} has not been packaged in your nixpkgs input, but is needed");
 }
