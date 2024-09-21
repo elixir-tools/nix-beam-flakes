@@ -27,8 +27,7 @@
 
 ## Project Status
 
-> [!WARNING]
-> Please note that this project is in low-maintenance mode. For more details on what this means in practice, please see [issue #53](https://github.com/shanesveller/nix-beam-flakes/issues/53).
+This is a fork of https://github.com/shanesveller/nix-beam-flakes. It is very very poorly maintained while the upstream project is in low maintenance mode.
 
 ## Requirements
 
@@ -58,13 +57,13 @@ Want to start a new Phoenix project? Don't have a global install of Elixir/Mix?
 This can help. Pairs well with flake templates below.
 
 ```shell
-nix run github:shanesveller/nix-beam-flakes#phx_new -- --help
+nix run github:mhanberg/nix-beam-flakes#phx_new -- --help
 ```
 
 #### livebook
 
 ```shell
-nix run github:shanesveller/nix-beam-flakes#livebook -- server
+nix run github:mhanberg/nix-beam-flakes#livebook -- server
 ```
 
 ## Usage
@@ -72,9 +71,9 @@ nix run github:shanesveller/nix-beam-flakes#livebook -- server
 ### Via Flake Template
 
 ```shell
-nix flake init -t github:shanesveller/nix-beam-flakes#default
+nix flake init -t github:mhanberg/nix-beam-flakes#default
 # or
-nix flake init -t github:shanesveller/nix-beam-flakes#phoenix
+nix flake init -t github:mhanberg/nix-beam-flakes#phoenix
 ```
 
 At the time of writing there is no meaningful distinction between the two, but
@@ -93,7 +92,7 @@ A complete example:
   description = "My Elixir application";
 
   inputs = {
-    beam-flakes.url = "github:shanesveller/nix-beam-flakes";
+    beam-flakes.url = "github:mhanberg/nix-beam-flakes";
     beam-flakes.inputs.flake-parts.follows = "flake-parts";
     flake-parts.url = "github:hercules-ci/flake-parts";
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";

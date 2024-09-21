@@ -7,11 +7,11 @@ This can help. Pairs well with flake templates below.
 
 ```shell
 # Stable
-nix run github:shanesveller/nix-beam-flakes#phx_new -- --help
+nix run github:mhanberg/nix-beam-flakes#phx_new -- --help
 ```
 
 ## livebook
 
 ```shell
-nix run github:shanesveller/nix-beam-flakes#livebook -- server
+nix run github:mhanberg/nix-beam-flakes#livebook -- server
 ```

@@ -5,7 +5,7 @@
 ### Default Template
 
 ```bash
-nix flake init -t github:shanesveller/nix-beam-flakes#default
+nix flake init -t github:mhanberg/nix-beam-flakes#default
 ```
 
 Current `flake.nix` content for this template is as follows:
@@ -17,7 +17,7 @@ Current `flake.nix` content for this template is as follows:
 ### Phoenix Template
 
 ```bash
-nix flake init -t github:shanesveller/nix-beam-flakes#phoenix
+nix flake init -t github:mhanberg/nix-beam-flakes#phoenix
 ```
 
 At the time of writing there is no meaningful distinction between this template
@@ -41,7 +41,7 @@ A complete example:
 {
   inputs = {
     # required
-    beam-flakes.url = "github:shanesveller/nix-beam-flakes";
+    beam-flakes.url = "github:mhanberg/nix-beam-flakes";
     flake-parts.url = "github:hercules-ci/flake-parts";
     # suggested
     beam-flakes.inputs.flake-parts.follows = "flake-parts";
