@@ -1,6 +1,6 @@
 {lib, ...}: {
   perSystem = {pkgs, ...}: let
-    beamPkgs = pkgs.beam.packages.erlangR26.extend (_final: prev: {
+    beamPkgs = pkgs.beam.packages.erlang_26.extend (_final: prev: {
       rebar3 = prev.rebar3.overrideAttrs (_old: {doCheck = false;});
     });
   in {
