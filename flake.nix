@@ -1,6 +1,15 @@
 {
   description = "Nix-based BEAM toolchain management";
 
+  nixConfig = {
+    extra-substituters = [
+      "https://nix-beam-flakes.cachix.org"
+    ];
+    extra-trusted-public-keys = [
+      "nix-beam-flakes.cachix.org-1:iRMzLmb/dZFw7v08Rp3waYlWqYZ8nR3fmtFwq2prdk4="
+    ];
+  };
+
   inputs = {
     flake-parts.url = "github:hercules-ci/flake-parts";
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
