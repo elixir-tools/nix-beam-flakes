@@ -63,8 +63,7 @@
       if (lib.versions.major version) == "25"
       then
         basePkg.override {
-          version = version;
-          sha256 = sha256;
+          inherit version sha256;
           configureFlags = ["--disable-jit"];
         }
       else basePkg.override {inherit sha256 version;}
