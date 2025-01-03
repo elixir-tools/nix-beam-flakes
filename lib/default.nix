@@ -146,7 +146,7 @@
       erlang = recentErlangs;
       os = ["macos-14" "ubuntu-latest"];
     } [
-      lib.attrsets.cartesianProductOfSets
+      lib.attrsets.cartesianProduct
       (builtins.filter (set: versionCompatible set.elixir set.erlang))
       (v: {include = v;})
     ];
