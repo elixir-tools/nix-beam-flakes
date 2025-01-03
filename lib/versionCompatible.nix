@@ -12,6 +12,12 @@
   bounds = [
     {
       min_erl = "24.0.0";
+      max_erl = "28.0.0";
+      min_el = "1.17.0";
+      max_el = "1.18.0";
+    }
+    {
+      min_erl = "24.0.0";
       max_erl = "27.0.0";
       min_el = "1.15.0";
       max_el = "1.16.0";
