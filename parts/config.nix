@@ -59,7 +59,7 @@ in {
             erlang = mkOption {
               description = "Textual version of Erlang/OTP to use";
               example = "25.2";
-              type = types.nullOr (types.strMatching "^([0-9]+)\.([0-9]+)(\.([0-9]+))?(\.([0-9+]))?$");
+              type = types.nullOr (types.strMatching "^([0-9]+)\.([0-9]+)(\.([0-9]+))?(\.([0-9]+))?$");
             };
             fromToolVersions = mkOption {
               description = "Read versions.{language} from an ASDF-compatible .tools-version file at the indicated path";
