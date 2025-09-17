@@ -3,8 +3,7 @@ on:
   pull_request:
   push:
     branches:
-      - "develop"
-      - "feature/ci"
+      - "main"
 
 concurrency:
   group: ${{ github.ref }}-cache
@@ -18,11 +17,8 @@ jobs:
     outputs:
       calculated: ${{ steps.set-matrix.outputs.matrix }}
     steps:
-      - uses: actions/checkout@v4
-      - name: Install Nix
-        uses: DeterminateSystems/nix-installer-action@v9
-        with:
-          diagnostic-endpoint: ""
+      - uses: actions/checkout@v5
+      - uses: cachix/install-nix-action@v31
       - name: Set Matrix
         id: set-matrix
         run: |
@@ -36,21 +32,23 @@ jobs:
     strategy:
       matrix: ${{ fromJSON(needs.matrix.outputs.calculated) }}
     steps:
-      - uses: actions/checkout@v4
-      - name: Install Nix
-        uses: DeterminateSystems/nix-installer-action@v9
+      - uses: actions/checkout@v5
+      - uses: cachix/install-nix-action@v31
         with:
-          diagnostic-endpoint: ""
-      - uses: DeterminateSystems/magic-nix-cache-action@v3
-        with:
-          diagnostic-endpoint: ""
-      - uses: cachix/cachix-action@v14
+          extra_nix_config: |
+            extra-substituters = https://nix-beam-flakes.cachix.org
+            extra-trusted-public-keys = nix-beam-flakes.cachix.org-1:iRMzLmb/dZFw7v08Rp3waYlWqYZ8nR3fmtFwq2prdk4=
+            accept-flake-config = true
+
+      - uses: cachix/cachix-action@v16
         if: github.ref == 'refs/heads/main'
         with:
           name: nix-beam-flakes
           authToken: "${{ secrets.CACHIX_AUTH_TOKEN }}"
           pathsToPush: "./result"
-          skipAddingSubstituter: true
+          useDaemon: false
+          cachixArgs: --verbose
+
       - run: |
           printf \
             "elixir %s\nerlang %s" \

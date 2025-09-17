@@ -21,7 +21,7 @@
       perSystem = _: {
         beamWorkspace = {
           enable = true;
-          devShell.languageServers.elixir = true;
+          devShell.languageServers.elixir = false;
           devShell.languageServers.erlang = false;
           flakePackages = true;
           versions.fromToolVersions = ./.tool-versions;
