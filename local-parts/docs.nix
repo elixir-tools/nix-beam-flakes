@@ -33,7 +33,6 @@
       ];
       documentType = "none";
       warningsAreErrors = false;
-      markdownByDefault = true;
       transformOptions = filterOptions;
     };
   in {
