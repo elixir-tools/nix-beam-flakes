@@ -11,6 +11,12 @@
   # https://hexdocs.pm/elixir/main/compatibility-and-deprecations.html#compatibility-between-elixir-and-erlang-otp
   bounds = [
     {
+      min_erl = "28.0.0";
+      max_erl = "29.0.0";
+      min_el = "1.18.4";
+      max_el = "1.19.0";
+    }
+    {
       min_erl = "24.0.0";
       max_erl = "28.0.0";
       min_el = "1.17.0";
