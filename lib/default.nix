@@ -55,18 +55,18 @@
     then basePkg.override {inherit sha256 version;}
     else null;
 
-  mkErlang = pkgs: version: sha256: let
+  mkErlang = pkgs: version: hash: let
     basePkg = otpBasePackage pkgs version;
   in
     if basePkg != null
     then
       if (lib.versions.major version) == "25"
       then
-        basePkg.override {
-          inherit version sha256;
+        basePkg.overrideAttrs {
+          inherit version hash;
           configureFlags = ["--disable-jit"];
         }
-      else basePkg.override {inherit sha256 version;}
+      else basePkg.overrideAttrs {inherit hash version;}
     else null;
 
   mkPackageSet = {
