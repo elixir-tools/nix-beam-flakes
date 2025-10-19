@@ -23,6 +23,3 @@ update: update-inputs
 update-inputs:
   nix flake update {{ update_args }} --flake .
   nix flake update {{ update_args }} --flake ./dev
-
-watch-docs:
-  nix develop .#docs --command mdbook serve --open
