@@ -6,7 +6,7 @@ _: {
       '';
 
       nix-prefetch-otp = pkgs.writeShellScriptBin "nix-prefetch-otp" ''
-        ${pkgs.nix}/bin/nix-prefetch-url --unpack https://github.com/erlang/otp/archive/OTP-''${1}.tar.gz
+        ${pkgs.nix-prefetch-github}/bin/nix-prefetch-github erlang otp --rev OTP-''${1} | ${pkgs.jq}/bin/jq -r .hash
       '';
     };
   };
