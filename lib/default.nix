@@ -64,9 +64,25 @@
       then
         basePkg.overrideAttrs {
           inherit version hash;
+          src = pkgs.fetchFromGitHub {
+            owner = "erlang";
+            repo = "otp";
+            tag = "OTP-${version}";
+            inherit hash;
+          };
           configureFlags = ["--disable-jit"];
         }
-      else basePkg.overrideAttrs {inherit hash version;}
+      else
+        basePkg.overrideAttrs {
+          inherit hash version;
+
+          src = pkgs.fetchFromGitHub {
+            owner = "erlang";
+            repo = "otp";
+            tag = "OTP-${version}";
+            inherit hash;
+          };
+        }
     else null;
 
   mkPackageSet = {

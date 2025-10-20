@@ -45,12 +45,14 @@
               deadnix.enable = true;
               prettier.enable = true;
               prettier.excludes = ["flake.lock"];
-              statix.enable = pkgs.stdenv.isLinux;
+              statix = {
+                enable = pkgs.stdenv.isLinux;
+                settings = {
+                  ignore = [".direnv/*"];
+                };
+              };
             };
             rootSrc = lib.mkForce ./..;
-            settings = {
-              statix.ignore = [".direnv/*"];
-            };
           };
         };
       };
