@@ -68,7 +68,7 @@
             owner = "erlang";
             repo = "otp";
             tag = "OTP-${version}";
-            inherit hash;
+            hash = "sha256-${hash}";
           };
           configureFlags = ["--disable-jit"];
         }
@@ -80,7 +80,7 @@
             owner = "erlang";
             repo = "otp";
             tag = "OTP-${version}";
-            inherit hash;
+            hash = "sha256-${hash}";
           };
         }
     else null;
