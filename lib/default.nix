@@ -95,8 +95,10 @@
     pkgs,
   }: let
     erlang = mkErlang pkgs erlangVersion versions.erlang.${erlangVersion};
-    beamPkgs = pkgs.beam.packagesWith erlang;
-    elixir = mkElixir beamPkgs elixirVersion versions.elixir.${elixirVersion};
+    beamPkgs = (pkgs.beam.packagesWith erlang).extend (_: _: {
+      elixir = mkElixir beamPkgs elixirVersion versions.elixir.${elixirVersion};
+    });
+    inherit (beamPkgs) elixir;
   in
     {
       inherit (beamPkgs) erlang;
