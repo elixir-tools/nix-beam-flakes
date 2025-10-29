@@ -53,8 +53,8 @@
   in
     if basePkg != null
     then
-      basePkg.override {
-        inherit version hash;
+      basePkg.overrideAttrs {
+        inherit hash;
         src = pkgs.fetchFromGitHub {
           owner = "elixir-lang";
           repo = "elixir";
