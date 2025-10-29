@@ -48,11 +48,20 @@
 
   latestVersions = import ./latestVersions.nix {inherit lib versions;};
 
-  mkElixir = beamPkgs: version: sha256: let
+  mkElixir = pkgs: beamPkgs: version: hash: let
     basePkg = elixirBasePackage beamPkgs version;
   in
     if basePkg != null
-    then basePkg.override {inherit sha256 version;}
+    then
+      basePkg.override {
+        inherit version hash;
+        src = pkgs.fetchFromGitHub {
+          owner = "elixir-lang";
+          repo = "elixir";
+          tag = "v${version}";
+          inherit hash;
+        };
+      }
     else null;
 
   mkErlang = pkgs: version: hash: let
@@ -96,7 +105,7 @@
   }: let
     erlang = mkErlang pkgs erlangVersion versions.erlang.${erlangVersion};
     beamPkgs = (pkgs.beam.packagesWith erlang).extend (_: _: {
-      elixir = mkElixir beamPkgs elixirVersion versions.elixir.${elixirVersion};
+      elixir = mkElixir pkgs beamPkgs elixirVersion versions.elixir.${elixirVersion};
     });
     inherit (beamPkgs) elixir;
   in

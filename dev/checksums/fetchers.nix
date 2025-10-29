@@ -2,7 +2,7 @@ _: {
   perSystem = {pkgs, ...}: {
     packages = {
       nix-prefetch-elixir = pkgs.writeShellScriptBin "nix-prefetch-elixir" ''
-        ${pkgs.nix}/bin/nix-prefetch-url --unpack https://github.com/elixir-lang/elixir/archive/v''${1}.tar.gz
+        ${pkgs.nix-prefetch-github}/bin/nix-prefetch-github elixir-lang elixir --rev v''${1} | ${pkgs.jq}/bin/jq -r .hash
       '';
 
       nix-prefetch-otp = pkgs.writeShellScriptBin "nix-prefetch-otp" ''
