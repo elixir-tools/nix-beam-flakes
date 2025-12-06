@@ -85,8 +85,8 @@ in {
           inherit pkgs;
           elixirVersion = beam-flakes-lib.normalizeElixir cfg.versions.elixir;
           erlangVersion = cfg.versions.erlang;
-          elixirLanguageServer = false;
-          erlangLanguageServer = false;
+          elixirLanguageServer = true;
+          erlangLanguageServer = true;
         };
       in {
         inherit (pkgset) elixir erlang elixir-ls erlang-ls;
