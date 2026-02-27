@@ -1,0 +1,72 @@
+name: "Add Versions"
+on:
+  workflow_dispatch:
+    inputs:
+      erlang_version:
+        description: "Erlang/OTP version to add (e.g. 27.2.1)"
+        required: false
+        type: string
+      elixir_version:
+        description: "Elixir version to add (e.g. 1.18.2)"
+        required: false
+        type: string
+
+jobs:
+  add-versions:
+    name: Add Erlang/Elixir versions
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: cachix/install-nix-action@v31
+
+      - name: Configure git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Add Erlang version
+        if: inputs.erlang_version != ''
+        run: nix run ./dev#add-otp-version ${{ inputs.erlang_version }}
+
+      - name: Add Elixir version
+        if: inputs.elixir_version != ''
+        run: nix run ./dev#add-elixir-version ${{ inputs.elixir_version }}
+
+      - name: Generate PR metadata
+        id: metadata
+        run: |
+          title="feat(checksums):"
+          body=""
+          branch="add-versions"
+          if [ -n "${{ inputs.erlang_version }}" ]; then
+            title="$title Erlang ${{ inputs.erlang_version }}"
+            body="- Erlang/OTP ${{ inputs.erlang_version }}"
+            branch="${branch}/erlang-${{ inputs.erlang_version }}"
+          fi
+          if [ -n "${{ inputs.elixir_version }}" ]; then
+            if [ -n "${{ inputs.erlang_version }}" ]; then
+              title="$title &"
+              body="$body"$'\n'
+            fi
+            title="$title Elixir ${{ inputs.elixir_version }}"
+            body="$body- Elixir ${{ inputs.elixir_version }}"
+            branch="${branch}/elixir-${{ inputs.elixir_version }}"
+          fi
+          {
+            echo "title=$title"
+            echo "branch=$branch"
+            echo "body<<EOF"
+            echo "$body"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v8
+        with:
+          branch: ${{ steps.metadata.outputs.branch }}
+          title: ${{ steps.metadata.outputs.title }}
+          body: ${{ steps.metadata.outputs.body }}
