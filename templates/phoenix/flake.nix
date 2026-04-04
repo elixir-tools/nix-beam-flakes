@@ -5,7 +5,6 @@
     beam-flakes = {
       url = "github:elixir-tools/nix-beam-flakes";
       inputs.flake-parts.follows = "flake-parts";
-      inputs.nixpkgs.follows = "nixpkgs";
     };
     flake-parts.url = "github:hercules-ci/flake-parts";
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
@@ -25,13 +24,12 @@
         beamWorkspace = {
           enable = true;
           devShell = {
-            languageServers.elixir = true;
+            languageServers.elixir = false;
             languageServers.erlang = false;
             phoenix = true;
           };
           versions = {
-            elixir = "1.16.2";
-            erlang = "26.2.3";
+            fromToolVersions = ./.tool-versions;
           };
         };
       };
