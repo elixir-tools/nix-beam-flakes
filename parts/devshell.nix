@@ -55,7 +55,7 @@ in {
           cfg.packages.elixir
           cfg.packages.erlang
         ]
-        ++ lib.optional cfg.devShell.languageServers.elixir cfg.packages.elixir-ls
+        ++ lib.optional cfg.devShell.languageServers.elixir cfg.packages.expert
         ++ lib.optional cfg.devShell.languageServers.erlang cfg.packages.erlang-ls;
 
       devShells = lib.mkIf (cfg.enable && cfg.devShell.enable) {

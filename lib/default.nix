@@ -116,7 +116,7 @@
     // (
       if elixirLanguageServer
       then {
-        elixir-ls = (beamPkgs.elixir-ls.override {inherit elixir;}).overrideAttrs (old: {
+        expert = (beamPkgs.expert.override {inherit elixir;}).overrideAttrs (old: {
           buildPhase =
             # Elixir 1.16.0 or newer
             if ((builtins.compareVersions elixir.version "1.16.0") != -1)

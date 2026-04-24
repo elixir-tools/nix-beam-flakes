@@ -44,7 +44,7 @@ This is a fork of https://github.com/shanesveller/nix-beam-flakes. It is very ve
   - Packages will be added to your own flake's outputs, and can be consumed by
     other Nix code
 - Declarative, automatic `devShell` creation using these packages (with opt-out)
-  - Opt-in support for `elixir-ls` and `erlang_ls` LSP servers
+  - Opt-in support for `expert` and `erlang_ls` LSP servers
 - Elixir-ecosystem-aware Nix helpers
 - A small number of Elixir applications usable directly via `nix run` (see below)
 - [Flake Templates](#via-template)

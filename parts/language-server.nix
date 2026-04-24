@@ -21,7 +21,7 @@ in {
 
       options.beamWorkspace.devShell = mkSubmoduleOptions {
         languageServers = {
-          elixir = mkEnableOption "elixir-ls";
+          elixir = mkEnableOption "expert";
           erlang = mkEnableOption "erlang-ls";
         };
       };
@@ -37,7 +37,7 @@ in {
           cfg.packages.erlang-ls
         ])
         (mkIf cfg.devShell.languageServers.elixir [
-          cfg.packages.elixir-ls
+          cfg.packages.expert
         ])
       ];
     };

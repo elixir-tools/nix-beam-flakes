@@ -39,7 +39,7 @@ in {
           inherit (cfg.packages) erlang-ls;
         })
         (mkIf cfg.devShell.languageServers.elixir {
-          inherit (cfg.packages) elixir-ls;
+          inherit (cfg.packages) expert;
         })
       ]);
     };

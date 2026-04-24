@@ -28,7 +28,7 @@ in {
               internal = true;
               type = types.nullOr types.package;
             };
-            elixir-ls = mkOption {
+            expert = mkOption {
               internal = true;
               type = types.nullOr types.package;
             };
@@ -89,7 +89,7 @@ in {
           erlangLanguageServer = true;
         };
       in {
-        inherit (pkgset) elixir erlang elixir-ls erlang-ls;
+        inherit (pkgset) elixir erlang expert erlang-ls;
       });
     };
   };
