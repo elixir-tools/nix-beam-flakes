@@ -27,7 +27,9 @@
 
 ## Project Status
 
-This is a fork of https://github.com/shanesveller/nix-beam-flakes. It is very very poorly maintained while the upstream project is in low maintenance mode.
+This is a hard fork of https://github.com/shanesveller/nix-beam-flakes.
+
+New versions of Elixir and Erlang are being actively added along with new feature development as time allows.
 
 ## Requirements
 
