@@ -1,6 +1,6 @@
 {lib, ...}: {
   perSystem = {pkgs, ...}: let
-    beamPkgs = pkgs.beam.packages.erlang_26.extend (_final: prev: {
+    beamPkgs = pkgs.beam.packages.erlang_27.extend (_final: prev: {
       rebar3 = prev.rebar3.overrideAttrs (_old: {doCheck = false;});
     });
     buildMixArchive = {
@@ -73,7 +73,7 @@
   in {
     packages = let
       inherit (beamPkgs) erlang rebar rebar3;
-      elixir = beamPkgs.elixir_1_15;
+      elixir = beamPkgs.elixir_1_17;
       hex = beamPkgs.hex.override {inherit elixir;};
       pname = "phx_new";
       subcommand = "phx.new";

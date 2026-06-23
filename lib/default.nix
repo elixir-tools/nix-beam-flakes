@@ -185,9 +185,57 @@
     elixir = importJSON ../data/elixir.json;
     erlang = importJSON ../data/erlang.json;
   };
+
+  mkBeamPackages = {
+    pkgs,
+    elixirVersion,
+    erlangVersion,
+  }: let
+    erlang = mkErlang pkgs erlangVersion versions.erlang.${erlangVersion};
+    beamPkgs = (pkgs.beam.packagesWith erlang).extend (_: _: {
+      elixir = mkElixir pkgs beamPkgs elixirVersion versions.elixir.${elixirVersion};
+    });
+  in
+    beamPkgs;
+
+  expertBeam = pkgs: pkgs.beam.packages.erlang_29.extend (_: prev: {elixir = prev.elixir_1_20;});
+
+  expert = pkgs: pkgs.callPackage ./expert.nix {beamPackages = expertBeam pkgs;};
+
+  mkEngine = {
+    pkgs,
+    beamPackages,
+    toolchains ? {},
+  }:
+    pkgs.callPackage ./engine.nix {inherit beamPackages toolchains;};
+
+  expertPackages = pkgs: let
+    beamByOtp = pkgs.beam.packages;
+    otps = builtins.filter (n: beamByOtp ? ${n}) ["erlang_27" "erlang_28" "erlang_29"];
+    elixirsOf = otp:
+      builtins.filter (n: builtins.match "elixir_1_[0-9]+" n != null) (builtins.attrNames beamByOtp.${otp});
+    engineFor = otp: elixir:
+      mkEngine {
+        inherit pkgs;
+        beamPackages = beamByOtp.${otp}.extend (_: prev: {elixir = prev.${elixir};});
+      };
+
+    toolchains = lib.genAttrs otps (otp: lib.genAttrs (elixirsOf otp) (engineFor otp));
+
+    expert' = expert pkgs;
+    engine = mkEngine {
+      inherit pkgs toolchains;
+      beamPackages = expertBeam pkgs;
+    };
+  in {
+    expert = expert';
+    inherit engine;
+    expert-with-engine = expert'.withEngine engine;
+  };
 in {
   inherit compatibleVersions compatibleVersionPackages versions versionCompatible;
   inherit mkElixir mkErlang mkPackageSet normalizeElixir;
+  inherit mkBeamPackages mkEngine expert expertPackages;
   inherit packageSetFromToolVersions parseToolVersions;
   inherit (latestVersions) latestElixirMinors latestErlangMajors recentElixirs recentErlangs;
   inherit recentMatrix;

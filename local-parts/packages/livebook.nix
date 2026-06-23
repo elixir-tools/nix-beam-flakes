@@ -1,28 +1,28 @@
 {lib, ...}: {
   perSystem = {pkgs, ...}: let
-    beamPkgs = pkgs.beam.packages.erlang_26.extend (_final: prev: {
+    beamPkgs = pkgs.beam.packages.erlang_27.extend (_final: prev: {
       rebar3 = prev.rebar3.overrideAttrs (_old: {doCheck = false;});
     });
   in {
     packages = let
       inherit (beamPkgs) erlang rebar3;
-      elixir = beamPkgs.elixir_1_15;
+      elixir = beamPkgs.elixir_1_18;
       hex = beamPkgs.hex.override {inherit elixir;};
       pname = "livebook";
 
       mixFodDeps = beamPkgs.fetchMixDeps {
         inherit elixir src version;
         pname = "mix-deps-${pname}";
-        sha256 = "sha256-x/VvXB2rJ03c3tWZRXnD3gbTT494P8GVD0sYEHcTp3o=";
+        sha256 = "sha256-T74RmUORPdNibxdl+bRGyYyOdnKs1TyjtdutLtfLNLM=";
       };
       src = pkgs.fetchFromGitHub {
         owner = "livebook-dev";
         repo = "livebook";
         rev = "v${version}";
-        sha256 = "sha256-Q4c0AelZZDPxE/rtoHIRQi3INMLHeiZ72TWgy183f4Q=";
+        sha256 = "sha256-cIFnGUJ8yRnEBL9eu4Jpg1sMlTV1t/ybhHusLSFdZEY=";
       };
       # https://github.com/livebook-dev/livebook/releases
-      version = "0.12.1";
+      version = "0.19.8";
     in {
       livebook = beamPkgs.mixRelease {
         buildInputs = [];

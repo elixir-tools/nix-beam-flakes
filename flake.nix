@@ -15,10 +15,17 @@
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
   };
 
-  outputs = inputs @ {flake-parts, ...}:
+  outputs = inputs @ {
+    flake-parts,
+    nixpkgs,
+    ...
+  }: let
+    systems = ["aarch64-darwin" "x86_64-darwin" "x86_64-linux"];
+    beamFlakesLib = import ./lib {inherit (nixpkgs) lib;};
+  in
     flake-parts.lib.mkFlake {inherit inputs;} {
       imports = [./parts/all-parts.nix ./local-parts];
-      systems = ["aarch64-darwin" "x86_64-darwin" "x86_64-linux"];
+      inherit systems;
 
       flake = {
         flakeModule = ./parts/all-parts.nix;
@@ -26,6 +33,14 @@
         perSystem = {pkgs, ...}: {
           formatter = pkgs.alejandra;
         };
+
+        packages =
+          nixpkgs.lib.genAttrs systems
+          (system: let
+            exp = beamFlakesLib.expertPackages (import nixpkgs {inherit system;});
+          in {
+            inherit (exp) expert engine expert-with-engine;
+          });
 
         templates = {
           default = {

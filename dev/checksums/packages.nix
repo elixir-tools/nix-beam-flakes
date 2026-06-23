@@ -20,8 +20,8 @@ _: {
           checksum=$(${lib.getExe prefetcher} $version)
           editCommand=".[\"$version\"] = \"$checksum\""
           ${lib.getExe pkgs.jq} --sort-keys "$editCommand" $targetFile | ${pkgs.moreutils}/bin/sponge $targetFile
-          ${lib.getExe pkgs.gitAndTools.git} add $targetFile
-          ${lib.getExe pkgs.gitAndTools.git} commit -m "feat(checksums): Add checksum for ${language} ''${version}"
+          ${lib.getExe pkgs.git} add $targetFile
+          ${lib.getExe pkgs.git} commit -m "feat(checksums): Add checksum for ${language} ''${version}"
         '';
       listGitHubReleases = name: repo:
         pkgs.writeShellScriptBin name ''
