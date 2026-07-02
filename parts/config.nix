@@ -80,17 +80,25 @@ in {
     }: let
       cfg = config.beamWorkspace;
     in {
-      beamWorkspace.packages = mkIf (cfg.versions.elixir != null && cfg.versions.erlang != null) (let
-        pkgset = beam-flakes-lib.mkPackageSet {
-          inherit pkgs;
-          elixirVersion = beam-flakes-lib.normalizeElixir cfg.versions.elixir;
-          erlangVersion = cfg.versions.erlang;
-          elixirLanguageServer = true;
-          erlangLanguageServer = true;
-        };
-      in {
-        inherit (pkgset) elixir erlang elixir-ls erlang-ls;
-      });
+      beamWorkspace.packages = mkIf (cfg.versions.elixir != null && cfg.versions.erlang != null) (
+        let
+          pkgset = beam-flakes-lib.mkPackageSet {
+            inherit pkgs;
+            elixirVersion = beam-flakes-lib.normalizeElixir cfg.versions.elixir;
+            erlangVersion = cfg.versions.erlang;
+            elixirLanguageServer = true;
+            erlangLanguageServer = true;
+          };
+        in {
+          inherit
+            (pkgset)
+            elixir
+            erlang
+            elixir-ls
+            erlang-ls
+            ;
+        }
+      );
     };
   };
 }

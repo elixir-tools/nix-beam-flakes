@@ -12,9 +12,16 @@
 
   outputs = inputs @ {flake-parts, ...}:
     flake-parts.lib.mkFlake {inherit inputs;} {
-      systems = ["aarch64-darwin" "x86_64-darwin" "x86_64-linux"];
+      systems = [
+        "aarch64-darwin"
+        "x86_64-darwin"
+        "x86_64-linux"
+      ];
 
-      imports = [./checksums inputs.pre-commit.flakeModule];
+      imports = [
+        ./checksums
+        inputs.pre-commit.flakeModule
+      ];
 
       perSystem = {
         config,
@@ -25,23 +32,30 @@
       }: {
         devShells.default = pkgs.mkShell {
           buildInputs =
-            [pkgs.just]
-            ++ (with inputs.pre-commit.packages.${system};
-              [alejandra pre-commit]
-              ++ lib.optionals pkgs.stdenv.isLinux [statix]);
+            [
+              pkgs.just
+            ]
+            ++ (
+              with inputs.pre-commit.packages.${system};
+                [
+                  nixfmt-tree
+                  pre-commit
+                ]
+                ++ lib.optionals pkgs.stdenv.isLinux [statix]
+            );
           shellHook = config.pre-commit.installationScript;
         };
 
-        formatter = pkgs.alejandra;
+        formatter = pkgs.nixfmt-tree;
 
-        packages.gcroot =
-          pkgs.linkFarmFromDrvs "beam-overlay-dev"
-          [config.devShells.default.inputDerivation];
+        packages.gcroot = pkgs.linkFarmFromDrvs "beam-overlay-dev" [
+          config.devShells.default.inputDerivation
+        ];
 
         pre-commit = {
           settings = {
             hooks = {
-              alejandra.enable = true;
+              nixfmt.enable = true;
               deadnix.enable = true;
               prettier.enable = true;
               prettier.excludes = ["flake.lock"];

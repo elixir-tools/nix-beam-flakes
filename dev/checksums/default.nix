@@ -1,3 +1,7 @@
 {...}: {
-  imports = [./devshell.nix ./fetchers.nix ./packages.nix];
+  imports = [
+    ./devshell.nix
+    ./fetchers.nix
+    ./packages.nix
+  ];
 }

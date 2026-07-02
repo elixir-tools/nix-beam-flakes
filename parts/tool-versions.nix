@@ -37,7 +37,9 @@ in {
         then (beam-flakes-lib.parseToolVersions cfg.versions.fromToolVersions)
         else {};
     in {
-      beamWorkspace.versions.elixir = mkIf (toolVersions != {}) (beam-flakes-lib.normalizeElixir toolVersions.elixir);
+      beamWorkspace.versions.elixir = mkIf (toolVersions != {}) (
+        beam-flakes-lib.normalizeElixir toolVersions.elixir
+      );
       beamWorkspace.versions.erlang = mkIf (toolVersions != {}) toolVersions.erlang;
     };
   };

@@ -17,16 +17,20 @@
 
   outputs = inputs @ {flake-parts, ...}:
     flake-parts.lib.mkFlake {inherit inputs;} {
-      imports = [./parts/all-parts.nix ./local-parts];
-      systems = ["aarch64-darwin" "x86_64-darwin" "x86_64-linux"];
+      imports = [
+        ./parts/all-parts.nix
+        ./local-parts
+      ];
+      systems = [
+        "aarch64-darwin"
+        "x86_64-darwin"
+        "x86_64-linux"
+      ];
 
       flake = {
         flakeModule = ./parts/all-parts.nix;
 
-        perSystem = {pkgs, ...}: {
-          formatter = pkgs.alejandra;
-        };
-
+        formatter.x86_64-linux = inputs.nixpkgs.legacyPackages.x86_64-linux.nixfmt-tree;
         templates = {
           default = {
             path = ./templates/default;

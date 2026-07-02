@@ -1,8 +1,12 @@
 {lib, ...}: {
   perSystem = {pkgs, ...}: let
-    beamPkgs = pkgs.beam.packages.erlang_26.extend (_final: prev: {
-      rebar3 = prev.rebar3.overrideAttrs (_old: {doCheck = false;});
-    });
+    beamPkgs = pkgs.beam.packages.erlang_26.extend (
+      _final: prev: {
+        rebar3 = prev.rebar3.overrideAttrs (_old: {
+          doCheck = false;
+        });
+      }
+    );
   in {
     packages = let
       inherit (beamPkgs) erlang rebar3;
@@ -28,7 +32,14 @@
         buildInputs = [];
         nativeBuildInputs = [pkgs.makeWrapper];
 
-        inherit elixir hex mixFodDeps pname src version;
+        inherit
+          elixir
+          hex
+          mixFodDeps
+          pname
+          src
+          version
+          ;
 
         installPhase = ''
           mix escript.build
@@ -37,7 +48,12 @@
           cp ./livebook $out/bin
 
           wrapProgram $out/bin/livebook \
-            --prefix PATH : ${lib.makeBinPath [elixir erlang]} \
+            --prefix PATH : ${
+            lib.makeBinPath [
+              elixir
+              erlang
+            ]
+          } \
             --set MIX_REBAR3 ${rebar3}/bin/rebar3
         '';
 
@@ -48,7 +64,14 @@
         buildInputs = [];
         nativeBuildInputs = [pkgs.makeWrapper];
 
-        inherit elixir hex mixFodDeps pname src version;
+        inherit
+          elixir
+          hex
+          mixFodDeps
+          pname
+          src
+          version
+          ;
 
         installPhase = ''
           mix escript.build
@@ -57,7 +80,19 @@
           cp ./livebook $out/bin
 
           wrapProgram $out/bin/livebook \
-            --prefix PATH : ${lib.makeBinPath ([elixir erlang] ++ (with pkgs; [cmake gcc gnumake]))} \
+            --prefix PATH : ${
+            lib.makeBinPath (
+              [
+                elixir
+                erlang
+              ]
+              ++ (with pkgs; [
+                cmake
+                gcc
+                gnumake
+              ])
+            )
+          } \
             --set MIX_REBAR3 ${rebar3}/bin/rebar3
         '';
 

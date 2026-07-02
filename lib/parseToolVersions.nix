@@ -1,5 +1,11 @@
 {lib}: let
-  inherit (builtins) filter map listToAttrs readFile;
+  inherit
+    (builtins)
+    filter
+    map
+    listToAttrs
+    readFile
+    ;
   inherit (lib.strings) splitString;
   inherit (lib.trivial) pipe;
 

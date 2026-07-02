@@ -23,13 +23,12 @@
     expandElixir = erlang: _name: attrs:
       if erlang != null
       then
-        nameValuePair "elixir_${attrs.version}"
-        (mkElixir (pkgs.beam.packagesWith erlang) attrs.version attrs.checksum)
+        nameValuePair "elixir_${attrs.version}" (
+          mkElixir (pkgs.beam.packagesWith erlang) attrs.version attrs.checksum
+        )
       else null;
     expandErlang = _erlangVersion: checksumSet: let
-      erlang =
-        mkErlang pkgs checksumSet.erlang.version
-        checksumSet.erlang.checksum;
+      erlang = mkErlang pkgs checksumSet.erlang.version checksumSet.erlang.checksum;
       elixirs = pipe checksumSet.elixirs [
         (mapAttrs' (expandElixir erlang))
         (filterAttrs (_n: v: v != null))
@@ -104,9 +103,11 @@
     pkgs,
   }: let
     erlang = mkErlang pkgs erlangVersion versions.erlang.${erlangVersion};
-    beamPkgs = (pkgs.beam.packagesWith erlang).extend (_: _: {
-      elixir = mkElixir pkgs beamPkgs elixirVersion versions.elixir.${elixirVersion};
-    });
+    beamPkgs = (pkgs.beam.packagesWith erlang).extend (
+      _: _: {
+        elixir = mkElixir pkgs beamPkgs elixirVersion versions.elixir.${elixirVersion};
+      }
+    );
     inherit (beamPkgs) elixir;
   in
     {
@@ -140,7 +141,13 @@
     // (
       if rebarCheck
       then {}
-      else lib.genAttrs ["rebar" "rebar3"] (p: beamPkgs.${p}.overrideAttrs (_old: {doCheck = false;}))
+      else
+        lib.genAttrs ["rebar" "rebar3"] (
+          p:
+            beamPkgs.${p}.overrideAttrs (_old: {
+              doCheck = false;
+            })
+        )
     );
 
   normalizeElixir = version:
@@ -155,12 +162,14 @@
   packageSetFromToolVersions = pkgs: toolVersionsPath: args: let
     asdfVersions = parseToolVersions toolVersionsPath;
   in
-    mkPackageSet ({
+    mkPackageSet (
+      {
         elixirVersion = normalizeElixir asdfVersions.elixir;
         erlangVersion = asdfVersions.erlang;
         inherit pkgs;
       }
-      // args);
+      // args
+    );
 
   parseToolVersions = import ./parseToolVersions.nix {inherit lib;};
 
@@ -168,27 +177,47 @@
 
   # idea credit: https://github.com/nix-community/nix-github-actions/blob/bfeb681177b5128d061ebbef7ded30bc21a3f135/default.nix
   recentMatrix =
-    pipe {
+    pipe
+    {
       elixir = recentElixirs;
       erlang = recentErlangs;
-      os = ["macos-latest" "ubuntu-latest"];
-    } [
+      os = [
+        "macos-latest"
+        "ubuntu-latest"
+      ];
+    }
+    [
       lib.attrsets.cartesianProduct
       (builtins.filter (set: versionCompatible set.elixir set.erlang))
       (v: {include = v;})
     ];
 
-  versionCompatible =
-    import ./versionCompatible.nix {inherit lib normalizeElixir;};
+  versionCompatible = import ./versionCompatible.nix {inherit lib normalizeElixir;};
 
   versions = {
     elixir = importJSON ../data/elixir.json;
     erlang = importJSON ../data/erlang.json;
   };
 in {
-  inherit compatibleVersions compatibleVersionPackages versions versionCompatible;
-  inherit mkElixir mkErlang mkPackageSet normalizeElixir;
+  inherit
+    compatibleVersions
+    compatibleVersionPackages
+    versions
+    versionCompatible
+    ;
+  inherit
+    mkElixir
+    mkErlang
+    mkPackageSet
+    normalizeElixir
+    ;
   inherit packageSetFromToolVersions parseToolVersions;
-  inherit (latestVersions) latestElixirMinors latestErlangMajors recentElixirs recentErlangs;
+  inherit
+    (latestVersions)
+    latestElixirMinors
+    latestErlangMajors
+    recentElixirs
+    recentErlangs
+    ;
   inherit recentMatrix;
 }

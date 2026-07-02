@@ -6,8 +6,7 @@ _: {
     ...
   }: {
     apps = {
-      add-elixir-version.program =
-        lib.getExe config.packages.add-elixir-version;
+      add-elixir-version.program = lib.getExe config.packages.add-elixir-version;
       add-otp-version.program = lib.getExe config.packages.add-otp-version;
     };
 

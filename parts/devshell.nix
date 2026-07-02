@@ -21,7 +21,11 @@ in {
 
       options.beamWorkspace = mkSubmoduleOptions {
         devShell = {
-          enable = mkEnableOption "beam-flakes devshells" // {default = true;};
+          enable =
+            mkEnableOption "beam-flakes devshells"
+            // {
+              default = true;
+            };
           extraArgs = mkOption {
             type = types.attrsOf types.anything;
             default = {};
@@ -32,7 +36,11 @@ in {
             description = "Additional Nix packages to include in the generated devShell";
             example = "pkgs.watchexec";
           };
-          iexShellHistory = mkEnableOption "IEx shell history" // {default = true;};
+          iexShellHistory =
+            mkEnableOption "IEx shell history"
+            // {
+              default = true;
+            };
           packages = mkOption {
             internal = true;
             type = types.listOf types.package;
@@ -59,14 +67,16 @@ in {
         ++ lib.optional cfg.devShell.languageServers.erlang cfg.packages.erlang-ls;
 
       devShells = lib.mkIf (cfg.enable && cfg.devShell.enable) {
-        default = pkgs.mkShell ({
+        default = pkgs.mkShell (
+          {
             packages = cfg.devShell.packages ++ cfg.devShell.extraPackages;
             ERL_AFLAGS =
               if cfg.devShell.iexShellHistory
               then "-kernel shell_history enabled"
               else null;
           }
-          // cfg.devShell.extraArgs);
+          // cfg.devShell.extraArgs
+        );
       };
     };
   };

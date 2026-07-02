@@ -2,7 +2,14 @@
   lib,
   normalizeElixir,
 }: elixir: erlang: let
-  inherit (builtins) concatStringsSep length map splitVersion toString;
+  inherit
+    (builtins)
+    concatStringsSep
+    length
+    map
+    splitVersion
+    toString
+    ;
   inherit (lib.lists) findFirst;
   inherit (lib.strings) versionAtLeast versionOlder;
 

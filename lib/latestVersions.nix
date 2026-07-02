@@ -3,7 +3,13 @@
   versions,
   ...
 }: let
-  inherit (builtins) attrNames attrValues compareVersions sort;
+  inherit
+    (builtins)
+    attrNames
+    attrValues
+    compareVersions
+    sort
+    ;
   inherit (lib.attrsets) getAttrs;
   inherit (lib.lists) groupBy' reverseList take;
   inherit (lib.strings) concatStringsSep;
