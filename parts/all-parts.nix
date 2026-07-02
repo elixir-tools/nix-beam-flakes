@@ -1,4 +1,4 @@
-{...}: {
+{ ... }: {
   imports = [
     ./lib.nix
     ./tool-versions.nix
