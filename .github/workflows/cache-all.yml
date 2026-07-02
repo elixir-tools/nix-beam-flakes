@@ -1,0 +1,69 @@
+name: "Cache All Versions"
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 6 * * 1"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  matrix:
+    name: Calculate all-versions matrix
+    runs-on: ubuntu-latest
+    outputs:
+      calculated: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+      - uses: NixOS/nix-installer-action@main
+      - name: Set Matrix
+        id: set-matrix
+        run: |
+          set -eux -o pipefail
+          echo "matrix=$(nix eval --json '.#packages.x86_64-linux' --apply '
+            ps: let
+              names = builtins.filter (n: builtins.match "erlang_.*" n != null) (builtins.attrNames ps);
+              oses = ["ubuntu-latest" "macos-latest"];
+            in {include = builtins.concatMap (erlang: map (os: {inherit os erlang;}) oses) names;}')" >> "$GITHUB_OUTPUT"
+
+  packages:
+    name: Cache ${{ matrix.erlang }} (${{ matrix.os }})
+    needs: matrix
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(needs.matrix.outputs.calculated) }}
+    steps:
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+      - uses: cachix/install-nix-action@8aa03977d8d733052d78f4e008a241fd1dbf36b3 # v31.10.6
+        with:
+          extra_nix_config: |
+            extra-substituters = https://nix-beam-flakes.cachix.org
+            extra-trusted-public-keys = nix-beam-flakes.cachix.org-1:iRMzLmb/dZFw7v08Rp3waYlWqYZ8nR3fmtFwq2prdk4=
+            accept-flake-config = true
+
+      - uses: cachix/cachix-action@5f2d7c5294214f71b873db4b969586b980625e71 # v17
+        if: github.ref == 'refs/heads/main'
+        with:
+          name: nix-beam-flakes
+          authToken: "${{ secrets.CACHIX_AUTH_TOKEN }}"
+          pathsToPush: "./result"
+          useDaemon: false
+          cachixArgs: --verbose
+
+      - name: Build ${{ matrix.erlang }} and its compatible Elixirs
+        run: |
+          set -eux -o pipefail
+          # shellcheck disable=SC2016
+          nix -L build --impure --expr '
+            let
+              f = builtins.getFlake (builtins.getEnv "GITHUB_WORKSPACE");
+              sys = builtins.currentSystem;
+              erl = f.packages.${sys}."${{ matrix.erlang }}";
+              elixirNames = builtins.filter (n: builtins.match "elixir_.*" n != null) (builtins.attrNames erl);
+              outs = [erl] ++ map (n: erl.${n}) elixirNames;
+              pkgs = f.inputs.nixpkgs.legacyPackages.${sys};
+            in
+              pkgs.linkFarmFromDrvs "${{ matrix.erlang }}-pkgs" outs'

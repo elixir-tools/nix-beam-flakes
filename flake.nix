@@ -15,29 +15,58 @@
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
   };
 
-  outputs = inputs @ {flake-parts, ...}:
-    flake-parts.lib.mkFlake {inherit inputs;} {
-      imports = [./parts/all-parts.nix ./local-parts];
-      systems = ["aarch64-darwin" "x86_64-darwin" "x86_64-linux"];
+  outputs =
+    inputs@{
+      flake-parts,
+      nixpkgs,
+      ...
+    }:
+    let
+      systems = [
+        "aarch64-darwin"
+        "x86_64-darwin"
+        "x86_64-linux"
+      ];
 
-      flake = {
-        flakeModule = ./parts/all-parts.nix;
+      base = flake-parts.lib.mkFlake { inherit inputs; } {
+        imports = [
+          ./parts/all-parts.nix
+          ./local-parts
+        ];
+        inherit systems;
 
-        perSystem = {pkgs, ...}: {
-          formatter = pkgs.alejandra;
+        perSystem = { pkgs, ... }: {
+          formatter = pkgs.nixfmt-tree;
         };
+        flake = {
+          flakeModule = ./parts/all-parts.nix;
 
-        templates = {
-          default = {
-            path = ./templates/default;
-            description = "An environment suitable for developing Elixir applications";
-          };
+          templates = {
+            default = {
+              path = ./templates/default;
+              description = "An environment suitable for developing Elixir applications";
+            };
 
-          phoenix = {
-            path = ./templates/phoenix;
-            description = "An environment suitable for developing Phoenix 1.7 applications";
+            phoenix = {
+              path = ./templates/phoenix;
+              description = "An environment suitable for developing Phoenix 1.7 applications";
+            };
           };
         };
       };
+
+      versionPackages = nixpkgs.lib.genAttrs systems (
+        system:
+        import ./lib/versionPackages.nix {
+          inherit (nixpkgs) lib;
+          pkgs = nixpkgs.legacyPackages.${system};
+        }
+      );
+    in
+    base
+    // {
+      packages = nixpkgs.lib.genAttrs systems (
+        system: (base.packages.${system} or { }) // versionPackages.${system}
+      );
     };
 }
