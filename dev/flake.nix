@@ -10,8 +10,9 @@
     };
   };
 
-  outputs = inputs @ {flake-parts, ...}:
-    flake-parts.lib.mkFlake {inherit inputs;} {
+  outputs =
+    inputs@{ flake-parts, ... }:
+    flake-parts.lib.mkFlake { inherit inputs; } {
       systems = [
         "aarch64-darwin"
         "x86_64-darwin"
@@ -23,52 +24,53 @@
         inputs.pre-commit.flakeModule
       ];
 
-      perSystem = {
-        config,
-        lib,
-        pkgs,
-        system,
-        ...
-      }: {
-        devShells.default = pkgs.mkShell {
-          buildInputs =
-            [
+      perSystem =
+        {
+          config,
+          lib,
+          pkgs,
+          system,
+          ...
+        }:
+        {
+          devShells.default = pkgs.mkShell {
+            buildInputs = [
               pkgs.just
             ]
             ++ (
               with inputs.pre-commit.packages.${system};
-                [
-                  nixfmt-tree
-                  pre-commit
-                ]
-                ++ lib.optionals pkgs.stdenv.isLinux [statix]
+              [
+                pkgs.nixfmt-tree
+                pre-commit
+              ]
+              ++ lib.optionals pkgs.stdenv.isLinux [ statix ]
             );
-          shellHook = config.pre-commit.installationScript;
-        };
+            shellHook = config.pre-commit.installationScript;
+          };
 
-        formatter = pkgs.nixfmt-tree;
+          formatter = pkgs.nixfmt-tree;
 
-        packages.gcroot = pkgs.linkFarmFromDrvs "beam-overlay-dev" [
-          config.devShells.default.inputDerivation
-        ];
+          packages.gcroot = pkgs.linkFarmFromDrvs "beam-overlay-dev" [
+            config.devShells.default.inputDerivation
+          ];
 
-        pre-commit = {
-          settings = {
-            hooks = {
-              nixfmt.enable = true;
-              deadnix.enable = true;
-              prettier.enable = true;
-              prettier.excludes = ["flake.lock"];
-              statix = {
-                enable = pkgs.stdenv.isLinux;
-                settings = {
-                  ignore = [".direnv/*"];
+          pre-commit = {
+            settings = {
+              hooks = {
+                nixfmt.enable = true;
+                deadnix.enable = true;
+                prettier.enable = true;
+                prettier.excludes = [ "flake.lock" ];
+                statix = {
+                  enable = pkgs.stdenv.isLinux;
+                  settings = {
+                    ignore = [ ".direnv/*" ];
+                  };
                 };
               };
+              rootSrc = lib.mkForce ./..;
             };
-            rootSrc = lib.mkForce ./..;
           };
         };
-      };
     };
 }

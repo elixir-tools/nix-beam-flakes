@@ -1,4 +1,5 @@
-{...}: {
+{ ... }:
+{
   imports = [
     ./devshell.nix
     ./fetchers.nix

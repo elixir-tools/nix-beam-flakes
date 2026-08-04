@@ -2,19 +2,19 @@
   lib,
   flake-parts-lib,
   ...
-}: let
-  inherit
-    (lib)
+}:
+let
+  inherit (lib)
     mkEnableOption
     mkMerge
     mkIf
     ;
-  inherit
-    (flake-parts-lib)
+  inherit (flake-parts-lib)
     mkPerSystemOption
     mkSubmoduleOptions
     ;
-in {
+in
+{
   options = {
     perSystem = mkPerSystemOption (_: {
       _file = ./phoenix.nix;
@@ -26,10 +26,12 @@ in {
   };
 
   config = {
-    perSystem = {pkgs, ...}: {
-      beamWorkspace.devShell.packages = mkMerge [
-        (mkIf pkgs.stdenv.isLinux [pkgs.inotify-tools])
-      ];
-    };
+    perSystem =
+      { pkgs, ... }:
+      {
+        beamWorkspace.devShell.packages = mkMerge [
+          (mkIf pkgs.stdenv.isLinux [ pkgs.inotify-tools ])
+        ];
+      };
   };
 }

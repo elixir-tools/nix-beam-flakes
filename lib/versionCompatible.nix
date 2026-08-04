@@ -1,9 +1,10 @@
 {
   lib,
   normalizeElixir,
-}: elixir: erlang: let
-  inherit
-    (builtins)
+}:
+elixir: erlang:
+let
+  inherit (builtins)
     concatStringsSep
     length
     map
@@ -151,18 +152,18 @@
     }
   ];
 
-  normalizeOtp = version: let
-    split = splitVersion version;
-    padded =
-      if (length split) < 3
-      then split ++ [0]
-      else split;
-  in
+  normalizeOtp =
+    version:
+    let
+      split = splitVersion version;
+      padded = if (length split) < 3 then split ++ [ 0 ] else split;
+    in
     concatStringsSep "." (map toString padded);
 
   elixir' = normalizeElixir elixir;
   erlang' = normalizeOtp erlang;
-  pred = bound:
+  pred =
+    bound:
     builtins.all (val: val) [
       (versionOlder erlang' bound.max_erl)
       (versionOlder elixir' bound.max_el)
@@ -170,4 +171,4 @@
       (versionAtLeast elixir' bound.min_el)
     ];
 in
-  builtins.isAttrs (findFirst pred false bounds)
+builtins.isAttrs (findFirst pred false bounds)

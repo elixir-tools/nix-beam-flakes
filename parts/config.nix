@@ -3,19 +3,19 @@
   beam-flakes-lib,
   flake-parts-lib,
   ...
-}: let
-  inherit
-    (lib)
+}:
+let
+  inherit (lib)
     mkEnableOption
     mkIf
     mkOption
     types
     ;
-  inherit
-    (flake-parts-lib)
+  inherit (flake-parts-lib)
     mkPerSystemOption
     ;
-in {
+in
+{
   options = {
     perSystem = mkPerSystemOption (_: {
       _file = ./config.nix;
@@ -73,32 +73,35 @@ in {
   };
 
   config = {
-    perSystem = {
-      config,
-      pkgs,
-      ...
-    }: let
-      cfg = config.beamWorkspace;
-    in {
-      beamWorkspace.packages = mkIf (cfg.versions.elixir != null && cfg.versions.erlang != null) (
-        let
-          pkgset = beam-flakes-lib.mkPackageSet {
-            inherit pkgs;
-            elixirVersion = beam-flakes-lib.normalizeElixir cfg.versions.elixir;
-            erlangVersion = cfg.versions.erlang;
-            elixirLanguageServer = true;
-            erlangLanguageServer = true;
-          };
-        in {
-          inherit
-            (pkgset)
-            elixir
-            erlang
-            elixir-ls
-            erlang-ls
-            ;
-        }
-      );
-    };
+    perSystem =
+      {
+        config,
+        pkgs,
+        ...
+      }:
+      let
+        cfg = config.beamWorkspace;
+      in
+      {
+        beamWorkspace.packages = mkIf (cfg.versions.elixir != null && cfg.versions.erlang != null) (
+          let
+            pkgset = beam-flakes-lib.mkPackageSet {
+              inherit pkgs;
+              elixirVersion = beam-flakes-lib.normalizeElixir cfg.versions.elixir;
+              erlangVersion = cfg.versions.erlang;
+              elixirLanguageServer = true;
+              erlangLanguageServer = true;
+            };
+          in
+          {
+            inherit (pkgset)
+              elixir
+              erlang
+              elixir-ls
+              erlang-ls
+              ;
+          }
+        );
+      };
   };
 }

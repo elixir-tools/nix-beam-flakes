@@ -15,8 +15,9 @@
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
   };
 
-  outputs = inputs @ {flake-parts, ...}:
-    flake-parts.lib.mkFlake {inherit inputs;} {
+  outputs =
+    inputs@{ flake-parts, ... }:
+    flake-parts.lib.mkFlake { inherit inputs; } {
       imports = [
         ./parts/all-parts.nix
         ./local-parts
@@ -27,10 +28,15 @@
         "x86_64-linux"
       ];
 
+      perSystem =
+        { pkgs, ... }:
+        {
+          formatter = pkgs.nixfmt-tree;
+        };
+
       flake = {
         flakeModule = ./parts/all-parts.nix;
 
-        formatter.x86_64-linux = inputs.nixpkgs.legacyPackages.x86_64-linux.nixfmt-tree;
         templates = {
           default = {
             path = ./templates/default;
