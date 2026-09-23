@@ -27,10 +27,10 @@ let
     pkgs:
     let
       expandElixir =
-        erlang: _name: attrs:
+        erlangVersion: erlang: _name: attrs:
         if erlang != null then
           nameValuePair "elixir_${attrs.version}" (
-            mkElixir (pkgs.beam.packagesWith erlang) attrs.version attrs.checksum
+            mkElixir pkgs (beamPackagesFor pkgs erlangVersion erlang) attrs.version attrs.checksum
           )
         else
           null;
@@ -39,7 +39,7 @@ let
         let
           erlang = mkErlang pkgs checksumSet.erlang.version checksumSet.erlang.checksum;
           elixirs = pipe checksumSet.elixirs [
-            (mapAttrs' (expandElixir erlang))
+            (mapAttrs' (expandElixir checksumSet.erlang.version erlang))
             (filterAttrs (_n: v: v != null))
           ];
         in
@@ -51,6 +51,12 @@ let
     ];
 
   erlangExists = pkgs: version: otpBasePackage pkgs version != null;
+
+  beamPackagesFor =
+    pkgs: erlangVersion: erlang:
+    pkgs.beam.packages."erlang_${lib.versions.major erlangVersion}".overrideScope (
+      _: _: { inherit erlang; }
+    );
 
   findBasePackage = import ./findBasePackage.nix { inherit lib; };
 
@@ -117,9 +123,9 @@ let
     }:
     let
       erlang = mkErlang pkgs erlangVersion versions.erlang.${erlangVersion};
-      beamPkgs = (pkgs.beam.packagesWith erlang).extend (
-        _: _: {
-          elixir = mkElixir pkgs beamPkgs elixirVersion versions.elixir.${elixirVersion};
+      beamPkgs = (beamPackagesFor pkgs erlangVersion erlang).overrideScope (
+        final: _: {
+          elixir = mkElixir pkgs final elixirVersion versions.elixir.${elixirVersion};
         }
       );
       inherit (beamPkgs) elixir;
@@ -150,7 +156,11 @@ let
     // (
       if erlangLanguageServer then
         {
-          inherit (beamPkgs) erlang-ls;
+          erlang-ls =
+            if pkgs ? erlang-language-platform then
+              pkgs.erlang-language-platform.override { beamPackages = beamPkgs; }
+            else
+              beamPkgs.erlang-ls;
         }
       else
         { }

@@ -37,8 +37,8 @@
         let
           pkgSet = self.lib.mkPackageSet {
             inherit pkgs;
-            elixirVersion = "1.16.2";
-            erlangVersion = "26.2.3";
+            elixirVersion = "1.18.4";
+            erlangVersion = "27.3.4.9";
             elixirLanguageServer = true;
           };
         in
